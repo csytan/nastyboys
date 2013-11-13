@@ -2,6 +2,7 @@ import bs4
 import datetime
 import urllib
 
+from get_filings import get_latest_document
 
 
 class NastyBoys ():
@@ -31,12 +32,12 @@ class NastyBoys ():
 
     def get_latest_filing (symbol, filing_type='10-Q'):
         """Return the text of the latest public filing
-        for the given symbol and filing type.
-
-        Implementation: Denis Papathanasiou
+        for the given symbol and filing type, or None
+        if the symbol is invalid or no such filing is
+        available, etc.
         """
 
-        return ""
+        return get_latest_document (symbol.upper(), filing_type)
 
     def get_sentiment (filing_text):
         """Run a sentiment analysis on the text of the
