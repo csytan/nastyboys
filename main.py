@@ -3,7 +3,7 @@ import datetime
 import urllib
 
 from get_filings import get_latest_document
-
+from trend import determine_trend
 
 class NastyBoys ():
     """Implementation of the #NastyBoys trading strategy,
@@ -57,8 +57,7 @@ class NastyBoys ():
 
         Implementation: Chris Natali
         """
-
-        return 0.0
+        return determine_trend(symbol, self.trade_date, trend_length=20, trend_end_days=1)
 
     def matches_bounce_expectation (symbol, sentiment, trend, best=True):
         """Rule for determining whether or not this symbol
