@@ -4,7 +4,8 @@ import datetime
 
 LARGE_DAILY_GAIN = 0.001
 
-def determine_trend(symbol, trade_date=datetime.datetime.now(), trend_length=20, trend_end_days_ago=1): 
+def determine_trend(symbol, trade_date=datetime.datetime.now(), 
+                    trend_length=20, trend_end_days_ago=1): 
     """
     returns a "trend score" derived from performing a linear 
     regression on the daily closing price of the stock 

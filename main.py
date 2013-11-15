@@ -5,16 +5,21 @@ import urllib
 from get_filings import get_latest_document
 from trend import determine_trend
 
+DEFAULT_TREND_LENGTH = 20
+
 class NastyBoys ():
     """Implementation of the #NastyBoys trading strategy,
     as devised 11/12/2013"""
 
     def __init__(self, candidates=100, trade_date=None):
+        self.candidates = candidates
         if trade_date is None:
-            self["candidates"] = candidates
-            self["trade_date"] = datetime.datetime.now()
+            self.trade_date = datetime.datetime.now()
+	else:
+	    self.trade_date = trade_date
+	
 
-    def get_extreme_performers (best=True):
+    def get_extreme_performers (self, best=True):
         """Return a list of self.candidates stock symbols
         which performed the best (best=True) or worst (best=False)
         for self.trade_date.
@@ -30,7 +35,7 @@ class NastyBoys ():
         stocks = movers.find_all('td', class_='first')
         return [stock.string for stock in stocks]
 
-    def get_latest_filing (symbol, filing_type='10-Q'):
+    def get_latest_filing (self, symbol, filing_type='10-Q'):
         """Return the text of the latest public filing
         for the given symbol and filing type, or None
         if the symbol is invalid or no such filing is
@@ -39,7 +44,7 @@ class NastyBoys ():
 
         return get_latest_document (symbol.upper(), filing_type)
 
-    def get_sentiment (filing_text):
+    def get_sentiment (self, filing_text):
         """Run a sentiment analysis on the text of the
         filing document, returning a float in the range
         -1.0 (bad) to 1.0 (good)
@@ -49,7 +54,7 @@ class NastyBoys ():
 
         return 0.0
 
-    def get_performance_trend (symbol, from_date):
+    def get_performance_trend (self, symbol):
         """Determine the performance trend for the stock
         symbol from the given date, to self.trade_date,
         return a float in the range -1.0 (perfect negative
@@ -57,9 +62,10 @@ class NastyBoys ():
 
         Implementation: Chris Natali
         """
-        return determine_trend(symbol, self.trade_date, trend_length=20, trend_end_days=1)
+        return determine_trend(symbol, self.trade_date, DEFAULT_TREND_LENGTH, 
+	                       trend_end_days_ago=1)
 
-    def matches_bounce_expectation (symbol, sentiment, trend, best=True):
+    def matches_bounce_expectation (self, symbol, sentiment, trend, best=True):
         """Rule for determining whether or not this symbol
         should be bought (best=False) or sold short (best=True)
         based on its sentiment and performance trend scores."""
@@ -75,7 +81,7 @@ class NastyBoys ():
 
         return result
 
-    def test_candidate_symbols (best=True):
+    def test_candidate_symbols (self, best=True):
         """Get a list of candidate symbols, based on their being
         either the best performers (best=True) or the worst (best=False),
         and decide whether or not to trade them, using their sentiment
@@ -85,13 +91,13 @@ class NastyBoys ():
         for sym in self.get_extreme_performers(best):
             if sym not in trade_symbols:
                 sentiment = self.get_sentiment(self.get_latest_filing(sym))
-                trend = self.get_performance_trend(sym, from_date) #how far back???
+                trend = self.get_performance_trend(sym) #how far back???
                 if self.matches_bounce_expectation(sym, sentiment, trend, best):
                     trade_symbols.append(sym)
 
         return trade_symbols
 
-    def run ():
+    def run (self):
         """Run the full algorithm and produce two lists:
         symbols to buy, in the expectation they will rise
         symbols to sell short, in the expectation they will fall."""
