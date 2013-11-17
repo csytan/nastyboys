@@ -1,4 +1,6 @@
+import cPickle as pickle
 import nltk
+import json
 import sys
 import os
 import re
@@ -28,24 +30,50 @@ def tokenize_data(data):
     stem_tokens += nltk.bigrams(stem_tokens)
     # kick out stop-words
     stopwords = nltk.corpus.stopwords
-    stop_free = filter(lambda x: x not in stopwords.words('english'),
+    stop_free_tokens = filter(lambda x: x not in stopwords.words('english'),
             stem_tokens)
     # return a list of tokens and bigrams
-    return stop_free
+    return stop_free_tokens
 
-def parse_data(tokenized_data):
-    pass
+def classifierizaton(tokenized_data, tag):
+    '''we are going to massage the data we go from tokenize_data into the form
+    that nltk naivebayseclassifier wants. the data should be something like
+    ({'contains(word)': True, 'contrains(word2)': True}, 'positive') 
+    '''
+    classify_dict = {key : True for key in tokenized_data}
+    return (classify_dict, tag)
 
-def run():
+def write_training_data(pickle_file):
+    counter = 0
     pos_dir = os.path.join(TRAINING_DIRECTORY, 'pos')
     neg_dir = os.path.join(TRAINING_DIRECTORY, 'neg')
     pos_list = load_data(pos_dir)
     neg_list = load_data(neg_dir)
-    tokenized = tokenize_data(pos_list[1])
+    training_set = []
+    for item in pos_list:
+        tokenized = tokenize_data(item)
+        training_set.append(classifierizaton(tokenized, 'pos'))
+        counter += 1
+        print counter
+    for item in neg_list:
+        tokenized = tokenize_data(item)
+        training_set.append(classifierizaton(tokenized, 'neg'))
+        counter += 1
+        print counter
+    with  open(pickle_file, 'w') as f:
+        pickle.dump(training_set, f)
 
+def train_data(pickle_file):
+    '''in this function, we first load the pick file in to the list of tuples
+    we wanted for nltk classifier then we run the training set'''
+    with open(pickle_file, 'r') as f:
+        training_set = pickle.load(f)
+    classifier = nltk.NaiveBayesClassifier.train(training_set)
+    import ipdb; ipdb.set_trace()
 
 if __name__ == '__main__':
-    run()
+    #write_training_data('training_data.p')
+    train_data('training_data.p')
 
 
 
