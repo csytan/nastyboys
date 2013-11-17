@@ -1,6 +1,5 @@
 import cPickle as pickle
 import nltk
-import json
 import sys
 import os
 import re
