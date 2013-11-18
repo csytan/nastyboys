@@ -10,7 +10,7 @@ from cStringIO import StringIO
 from urllib import urlencode
 
 def load_url (url, user_agent=None):
-    """Attempt to load the url using pycurl and return the data (which is None if unsuccessful)"""
+    """Attempt to load the url using pycurl and return the data, or None if unsuccessful"""
 
     databuffer = StringIO()
     curl = pycurl.Curl()

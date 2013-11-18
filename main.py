@@ -36,10 +36,11 @@ class NastyBoys ():
         return [stock.string for stock in stocks]
 
     def get_latest_filing (self, symbol, filing_type='10-Q'):
-        """Return the text of the latest public filing
-        for the given symbol and filing type, or None
-        if the symbol is invalid or no such filing is
-        available, etc.
+        """Return a tuple: (the filing date as a string in
+        'YYYY-MM-DD' format, text of the latest public filing)
+        corresponding to the given symbol and filing type, or
+        (None, None) if the symbol is invalid or no such filing
+        is available, etc.
         """
 
         return get_latest_document (symbol.upper(), filing_type)
@@ -90,7 +91,8 @@ class NastyBoys ():
         trade_symbols = []
         for sym in self.get_extreme_performers(best):
             if sym not in trade_symbols:
-                sentiment = self.get_sentiment(self.get_latest_filing(sym))
+                filing_date, filing_text = self.get_latest_filing(sym)
+                sentiment = self.get_sentiment(filing_text)
                 trend = self.get_performance_trend(sym) #how far back???
                 if self.matches_bounce_expectation(sym, sentiment, trend, best):
                     trade_symbols.append(sym)
