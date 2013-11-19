@@ -52,7 +52,7 @@ def get_sentiment (filing_text):
 
     return 0.0
 
-def get_performance_trend (symbol):
+def get_performance_trend (symbol, trade_date=datetime.datetime.now()):
     """Determine the performance trend for the stock
     symbol from the given date, to trade_date, return
     a float in the range -1.0 (perfect negative trend)
