@@ -61,7 +61,7 @@ def get_performance_trend (symbol, trade_date=datetime.datetime.now()):
     Implementation: Chris Natali
     """
     return determine_trend(symbol, trade_date, DEFAULT_TREND_LENGTH, 
-                           trend_end_days_ago=1)
+            trend_end_days_ago=1)
 
 def matches_bounce_expectation (symbol, sentiment, trend, best=True):
     """Rule for determining whether or not this symbol
@@ -79,6 +79,7 @@ def matches_bounce_expectation (symbol, sentiment, trend, best=True):
 
     return result
 
+
 def test_candidate_symbols (best=True, use_sentiment=True):
     """Get a list of candidate symbols, based on their being
     either the best performers (best=True) or the worst (best=False),
@@ -88,19 +89,23 @@ def test_candidate_symbols (best=True, use_sentiment=True):
     trade_symbols = []
     for sym in get_extreme_performers(best):
         if sym not in trade_symbols:
-            trend = get_performance_trend(sym)
+            try:
+                trend = get_performance_trend(sym)
 
-            if use_sentiment:
-                filing_date, filing_text = get_latest_filing(sym)
-                sentiment = get_sentiment(filing_text)
-            else:
-                # match the sentiment to the trend
-                # (so we don't have to rewrite the
-                # matches_bounce_expectation() fn)
-                sentiment = trend
-                
-            if matches_bounce_expectation(sym, sentiment, trend, best):
-                trade_symbols.append(sym)
+                if use_sentiment:
+                    filing_date, filing_text = get_latest_filing(sym)
+                    sentiment = get_sentiment(filing_text)
+                else:
+                    # match the sentiment to the trend
+                    # (so we don't have to rewrite the
+                    # matches_bounce_expectation() fn)
+                    sentiment = trend
+
+                if matches_bounce_expectation(sym, sentiment, trend, best):
+                    trade_symbols.append(sym)
+
+            except Exception, e:
+                sys.stderr.write("Exception processing symbol %s, Exception: %s\n" % (sym, e))
 
     return trade_symbols
 
