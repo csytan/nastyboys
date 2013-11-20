@@ -65,7 +65,7 @@ def write_training_data(pickle_file):
         training_set.append(classifierizaton(tokenized, 'neg'))
         counter += 1
         print counter
-    calssifier = train_data(training_set)
+    classifier = train_data(training_set)
     with  open(pickle_file, 'w') as f:
         pickle.dump(classifier, f)
 
