@@ -42,6 +42,12 @@ def classifierizaton(tokenized_data, tag):
     classify_dict = {key : True for key in tokenized_data}
     return (classify_dict, tag)
 
+def train_data(training_set):
+    '''in this function, we first load the pick file in to the list of tuples
+    we wanted for nltk classifier then we run the training set'''
+    classifier = nltk.NaiveBayesClassifier.train(training_set)
+    return classifier
+
 def write_training_data(pickle_file):
     counter = 0
     pos_dir = os.path.join(TRAINING_DIRECTORY, 'pos')
@@ -59,20 +65,15 @@ def write_training_data(pickle_file):
         training_set.append(classifierizaton(tokenized, 'neg'))
         counter += 1
         print counter
+    calssifier = train_data(training_set)
     with  open(pickle_file, 'w') as f:
-        pickle.dump(training_set, f)
+        pickle.dump(classifier, f)
 
-def train_data(pickle_file):
-    '''in this function, we first load the pick file in to the list of tuples
-    we wanted for nltk classifier then we run the training set'''
-    with open(pickle_file, 'r') as f:
-        training_set = pickle.load(f)
-    classifier = nltk.NaiveBayesClassifier.train(training_set)
-    import ipdb; ipdb.set_trace()
 
 if __name__ == '__main__':
     #write_training_data('training_data.p')
-    train_data('training_data.p')
+    write_training_data('training_data.p')
+    import ipdb; ipdb.set_trace()
 
 
 
