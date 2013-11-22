@@ -1,4 +1,3 @@
-
 """
 This runs the #NastyBoys trading algorithm from a command line interface
 
@@ -71,10 +70,16 @@ def matches_bounce_expectation (symbol, sentiment, trend, best=True):
     result = False
 
     if best:
-        if trend < 0.0 and sentiment < 0.0:
+        # Big Gainer, but the previous trend
+        # was "consistently" down...bet that 
+        # it's going to come back down
+        if trend < -0.9 and sentiment < 0.0:
             result = True
     else:
-        if trend > 0.0 and sentiment > 0.0:
+        # Big Loser, but the previous trend
+        # was "consistently" up...bet that
+        # it's going to come back up
+        if trend > 0.9 and sentiment > 0.0:
             result = True
 
     return result
@@ -96,10 +101,11 @@ def test_candidate_symbols (best=True, use_sentiment=True):
                     filing_date, filing_text = get_latest_filing(sym)
                     sentiment = get_sentiment(filing_text)
                 else:
-                    # match the sentiment to the trend
+                    # make sentiment match our criteria
+                    # for the case we're interested in for now
                     # (so we don't have to rewrite the
                     # matches_bounce_expectation() fn)
-                    sentiment = trend
+                    sentiment = -1.0 if best else 1.0 
 
                 if matches_bounce_expectation(sym, sentiment, trend, best):
                     trade_symbols.append(sym)
@@ -130,14 +136,12 @@ def main():
         to_sell = test_candidate_symbols(best=True,  use_sentiment=use_sentiment)
 
         if len(to_buy) > 0:
-            print "*** BUY:"
             for sym in to_buy:
-                print '\t', sym
+                print sym, 'long'
 
         if len(to_sell) > 0:
-            print "*** SELL SHORT:"
             for sym in to_sell:
-                print '\t', sym
+                print sym, 'short'
 
 if __name__ == "__main__":
     main()
