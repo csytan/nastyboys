@@ -48,32 +48,76 @@ def train_data(training_set):
     classifier = nltk.NaiveBayesClassifier.train(training_set)
     return classifier
 
-def write_training_data(pickle_file):
+def massage_trainging_data(label):
+    
+    label_dir = os.path.join(TRAINING_DIRECTORY, label)
+    labeled_list = load_data(label_dir)
+    labeled_data_set = []
     counter = 0
-    pos_dir = os.path.join(TRAINING_DIRECTORY, 'pos')
-    neg_dir = os.path.join(TRAINING_DIRECTORY, 'neg')
-    pos_list = load_data(pos_dir)
-    neg_list = load_data(neg_dir)
-    training_set = []
-    for item in pos_list:
+    for item in labeled_list:
         tokenized = tokenize_data(item)
-        training_set.append(classifierizaton(tokenized, 'pos'))
+        labeled_data_set.append(classifierizaton(tokenized, label))
         counter += 1
         print counter
-    for item in neg_list:
-        tokenized = tokenize_data(item)
-        training_set.append(classifierizaton(tokenized, 'neg'))
-        counter += 1
-        print counter
+    return labeled_data_set
+
+def seperate_train_test_data(pos_set, neg_set):
+    '''this small function combines pos & neg data, 
+    and separate it into training set and testing set
+    '''
+    pos_cutoff = len(pos_set)*3/4
+    neg_cutoff = len(neg_set)*3/4
+
+    training_set = pos_set[:pos_cutoff] + neg_set[:neg_cutoff]
+    testing_set = pos_set[pos_cutoff:] + neg_set[neg_cutoff:]
+    
+    return training_set,testing_set
+
+
+def load_or_pickle_data(pos_label, neg_label):
+    '''
+    function loads training & testing data if it exists
+    if not process the raw data files and pickle the train & test data
+    pos_label & neg_label are the folder name of the labled files
+    '''
+
+    train_data_dir = os.path.join(BASE_DIR, "train_sample.pydata")
+    test_data_dir = os.path.join(BASE_DIR, "test_sample.pydata")
+
+    if os.path.exists(train_data_dir) and os.path.exists(test_data_dir):
+        print "training & testing data exists"
+        with open(train_data_dir, 'rb') as f:
+            training_set = pickle.load(f)
+        with open(test_data_dir, 'rb') as f:
+            testing_set = pickle.load(f)
+    else:
+        print "training & testing data doesnt exists"
+        pos_set = massage_trainging_data('pos')
+        neg_set = massage_trainging_data('neg')
+
+        training_set,testing_set = seperate_train_test_data(pos_set, neg_set)
+        print "Pickling traing and testing data"
+        
+        with open(train_data_dir, 'wb') as f:
+            pickle.dump(training_set, f, protocol=2)
+
+        with open(test_data_dir, 'wb') as f:
+            pickle.dump(testing_set, f, protocol=2)
+    
+    return training_set, testing_set
+
+
+def getting_classifier(pos_label, neg_label):
+    training_set, testing_set = load_or_pickle_data(pos_label, neg_label)
     classifier = train_data(training_set)
-    with  open(pickle_file, 'w') as f:
-        pickle.dump(classifier, f)
+    
+    import ipdb; ipdb.set_trace()
+
 
 
 if __name__ == '__main__':
     #write_training_data('training_data.p')
-    write_training_data('training_data.p')
-    import ipdb; ipdb.set_trace()
+    getting_classifier('pos', 'neg')   
 
 
 
