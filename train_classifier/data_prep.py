@@ -19,18 +19,19 @@ def load_data(pos_dir):
 def tokenize_data(data):
     # strip off unwanted char
     data = data.replace('\n', '')
-    word_reg = re.compile('[a-zA-Z0-9\']+')
+    word_reg = re.compile("[^a-zA-Z0-9\'\s]")
     # tokenize the rest of the words
-    tokens = [item.lower() for item in re.findall(word_reg, data)]
+    tokens = [item.lower() for item in nltk.word_tokenize(
+        re.sub(word_reg, "", data)) if len(item) >=3]
     # stem the tokenized words
     stemmer = nltk.stem.SnowballStemmer('english')
-    stem_tokens = [stemmer.stem(word) for word in tokens]
+    stem_tokens = [stemmer.stem(re.sub(r'n\'t', 'not', word)) for word in tokens]
     # bigram
     stem_tokens += nltk.bigrams(stem_tokens)
     # kick out stop-words
     stopwords = nltk.corpus.stopwords
-    stop_free_tokens = filter(lambda x: x not in stopwords.words('english'),
-            stem_tokens)
+    my_stopwords = stopwords.words('english') + ['ll', 've']
+    stop_free_tokens = filter(lambda x: x not in my_stopwords, stem_tokens)
     # return a list of tokens and bigrams
     return stop_free_tokens
 
