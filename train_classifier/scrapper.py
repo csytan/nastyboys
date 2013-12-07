@@ -77,17 +77,9 @@ def fetch_latest_doc(symbol, form_type):
         return sgml_link
 
 
-                        
-test = fetch_latest_doc(symbol="AAPL", form_type="10-K")
-print test
-import ipdb; ipdb.set_trace()
-soup = urlopen(test).read()
-hdr_index = soup.find('<TEXT>')
-if hdr_index > -1:
-    html_text = soup[ (hdr_index+len('<TEXT>')): ]
-    tree = BeautifulSoup(html_text)
+def get_latest_text(symbol, form_type):
+    """ TODO: Figure out WTF is wrong with BS4 in parsing gigantic xml file
+    with tons of nodes, and parse it and extract pure text from the xml
+    """
 
-test2 = soup.findAll("<TEXT>")
-
-
-
+    pass
