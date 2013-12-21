@@ -77,9 +77,23 @@ def fetch_latest_doc(symbol, form_type):
         return sgml_link
 
 
-def get_latest_text(symbol, form_type):
+def get_latest_text(symbol, form_type='10-Q'):
     """ TODO: Figure out WTF is wrong with BS4 in parsing gigantic xml file
     with tons of nodes, and parse it and extract pure text from the xml
     """
+    latest_doc_link = fetch_latest_doc(symbol, form_type)
+    sgml_text = urlopen(latest_doc_link).read()
+    break_text = sgml_text.split('</TEXT>')
 
+    for text in break_text:
+        if "<XBRL>" in text:
+            #parse file with xbrl parser
+            pass
+        elif "<html>" in text:
+            soup = BeautifulSoup(text, 'lxml')
+            import ipdb; ipdb.set_trace()
+            soup.find('body')
     pass
+
+
+get_latest_text("AAPL")
