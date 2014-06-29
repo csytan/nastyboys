@@ -7,12 +7,6 @@ source: http://useragentstring.com/pages/useragentstring.php
 
 from random import randint
 
-def random_ua (ua_list=USER_AGENTS):
-    """Return a random user agent string"""
-
-    return ua_list[randint(0, len(ua_list)-1)]
-
-
 USER_AGENTS = [
     'Mozilla/5.0 (X11; Linux) KHTML/4.9.1 (like Gecko) Konqueror/4.9',
     'Mozilla/5.0 (X11; Linux 3.5.4-1-ARCH i686; es) KHTML/4.9.1 (like Gecko) Konqueror/4.9',
@@ -266,3 +260,10 @@ USER_AGENTS = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.66 Safari/535.11',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_8) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.66 Safari/535.11',
 ]
+
+
+def random_ua (ua_list=USER_AGENTS):
+    """Return a random user agent string"""
+
+    return ua_list[randint(0, len(ua_list)-1)]
+

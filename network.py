@@ -23,6 +23,8 @@ def load_url (url, user_agent=None, proxy={}):
         curl.setopt(pycurl.PROXY, proxy['host'])
         curl.setopt(pycurl.PROXYPORT, proxy['port'])
         curl.setopt(pycurl.PROXYTYPE, pycurl.PROXYTYPE_SOCKS5)
+        curl.setopt(pycurl.PROXYTYPE, pycurl.PROXYTYPE_SOCKS5)
+        curl.setopt(pycurl.CONNECTTIMEOUT, 6)
     try:
         curl.perform()
         data = databuffer.getvalue()
@@ -47,6 +49,7 @@ def post_url (url, data, user_agent=None, proxy={}):
         curl.setopt(pycurl.PROXY, proxy['host'])
         curl.setopt(pycurl.PROXYPORT, proxy['port'])
         curl.setopt(pycurl.PROXYTYPE, pycurl.PROXYTYPE_SOCKS5)
+        curl.setopt(pycurl.CONNECTTIMEOUT, 6)
     try:
         curl.perform()
         data = databuffer.getvalue()
